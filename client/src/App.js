@@ -5,6 +5,7 @@ function App() {
 
   const modelOptions = ['HF32C', 'CH2025', 'CH12032', 'CH22032', 'CH2038', 'AL2025', 'A1028', 'A1032', 'EF35A', 'DA100', 'HF32A', 'HF35A'];
   const batchOptions = ['2024', '2025', '2026'];
+  const GOOGLE_SHEET_LINK = 'https://docs.google.com/spreadsheets/d/1UcjRyoDTBkbXzJOgkGb1gCtLSUk98oHxmEYxv10kwFs/edit?usp=sharing';
 
   // Client info
   const [clientName, setClientName] = useState("");
@@ -108,9 +109,9 @@ function App() {
             <h1 className="text-2xl font-bold">Replacement Tracker</h1>
           </div>
 
-          {/* Client Info */}
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <div>
+          {/* Client Info - Stacked Layout */}
+          <div className="mb-6">
+            <div className="mb-4">
               <label className="block mb-1 font-medium">Client Name</label>
               <input
                 type="text"
@@ -135,12 +136,23 @@ function App() {
           {incoming.length === 0 && (
             <p className="text-sm text-gray-500 mb-2">No incoming lines. Add one if needed.</p>
           )}
+          
+          {/* Headers for incoming products */}
+          {incoming.length > 0 && (
+            <div className="grid grid-cols-4 gap-2 mb-2">
+              <div className="text-sm font-medium text-gray-600">Model No</div>
+              <div className="text-sm font-medium text-gray-600">Batch No</div>
+              <div className="text-sm font-medium text-gray-600">Qty</div>
+              <div></div>
+            </div>
+          )}
+          
           {incoming.map((row, index) => (
-            <div key={index} className="grid grid-cols-4 gap-4 mb-2 items-center">
+            <div key={index} className="grid grid-cols-4 gap-2 mb-2 items-center">
               <select
                 value={row.modelNo}
                 onChange={(e) => handleChange("in", index, "modelNo", e.target.value)}
-                className="border rounded-lg p-2"
+                className="w-full border rounded-lg p-2"
               >
                 <option value="">Select Model</option>
                 {modelOptions.map(model => (
@@ -150,7 +162,7 @@ function App() {
               <select
                 value={row.batchNo}
                 onChange={(e) => handleChange("in", index, "batchNo", e.target.value)}
-                className="border rounded-lg p-2"
+                className="w-full border rounded-lg p-2"
               >
                 <option value="">Select Batch</option>
                 {batchOptions.map(batch => (
@@ -162,7 +174,7 @@ function App() {
                 placeholder="Qty"
                 value={row.qty}
                 onChange={(e) => handleChange("in", index, "qty", e.target.value)}
-                className="border rounded-lg p-2"
+                className="w-full border rounded-lg p-2"
               />
               <button
                 type="button"
@@ -185,12 +197,23 @@ function App() {
           {outgoing.length === 0 && (
             <p className="text-sm text-gray-500 mb-2">No outgoing lines. Add one if needed.</p>
           )}
+          
+          {/* Headers for outgoing products */}
+          {outgoing.length > 0 && (
+            <div className="grid grid-cols-4 gap-2 mb-2">
+              <div className="text-sm font-medium text-gray-600">Model No</div>
+              <div className="text-sm font-medium text-gray-600">Batch No</div>
+              <div className="text-sm font-medium text-gray-600">Qty</div>
+              <div></div>
+            </div>
+          )}
+          
           {outgoing.map((row, index) => (
-            <div key={index} className="grid grid-cols-4 gap-4 mb-2 items-center">
+            <div key={index} className="grid grid-cols-4 gap-2 mb-2 items-center">
               <select
                 value={row.modelNo}
-                onChange={(e) => handleChange("in", index, "modelNo", e.target.value)}
-                className="border rounded-lg p-2"
+                onChange={(e) => handleChange("out", index, "modelNo", e.target.value)}
+                className="w-full border rounded-lg p-2"
               >
                 <option value="">Select Model</option>
                 {modelOptions.map(model => (
@@ -199,8 +222,8 @@ function App() {
               </select>
               <select
                 value={row.batchNo}
-                onChange={(e) => handleChange("in", index, "batchNo", e.target.value)}
-                className="border rounded-lg p-2"
+                onChange={(e) => handleChange("out", index, "batchNo", e.target.value)}
+                className="w-full border rounded-lg p-2"
               >
                 <option value="">Select Batch</option>
                 {batchOptions.map(batch => (
@@ -212,7 +235,7 @@ function App() {
                 placeholder="Qty"
                 value={row.qty}
                 onChange={(e) => handleChange("out", index, "qty", e.target.value)}
-                className="border rounded-lg p-2"
+                className="w-full border rounded-lg p-2"
               />
               <button
                 type="button"
@@ -255,12 +278,20 @@ function App() {
             ></path>
           </svg>
           <h2 className="text-2xl font-bold mt-4 mb-6">Form Submitted</h2>
-          <button
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
-            onClick={() => setSubmitted(false)}
-          >
-            Go Back
-          </button>
+          <div className="space-y-3">
+            <button
+              className="bg-green-600 text-white px-6 py-2 rounded-lg w-full hover:bg-green-700"
+              onClick={() => window.open(GOOGLE_SHEET_LINK, '_blank')}
+            >
+              View Google Sheet
+            </button>
+            <button
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg w-full hover:bg-blue-700"
+              onClick={() => setSubmitted(false)}
+            >
+              Submit Another Entry
+            </button>
+          </div>
         </div>
       )}
     </div>
