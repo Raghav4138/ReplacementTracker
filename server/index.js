@@ -12,8 +12,17 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Authenticate with Google Sheets
+// const auth = new google.auth.GoogleAuth({
+//   keyFile: path.join(__dirname, 'service-account.json'),
+//   scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+// });
+
+// Authenticate with Google Sheets using environment variables
 const auth = new google.auth.GoogleAuth({
-  keyFile: path.join(__dirname, 'service-account.json'),
+  credentials: {
+    client_email: process.env.GOOGLE_CLIENT_EMAIL,
+    private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+  },
   scopes: ['https://www.googleapis.com/auth/spreadsheets'],
 });
 
