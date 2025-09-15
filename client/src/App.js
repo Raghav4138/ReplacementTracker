@@ -69,8 +69,10 @@ function App() {
       outgoing: validOutgoing,
     };
 
+    const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:5000";
+
     try {
-      await axios.post("http://localhost:5000/submit", payload);
+      await axios.post(`${API_BASE}/submit`, payload);
       setSubmitted(true); // show success page
       // Optional: reset form fields if needed
       setClientName("");
