@@ -35,7 +35,17 @@ app.post('/submit', async (req, res) => {
   try {
     const { clientName, date, incoming, outgoing } = req.body;
 
-    const timestamp = new Date().toISOString();
+    // const timestamp = new Date().toISOString();
+    const timestamp = new Date().toLocaleString('en-US', { 
+      timeZone: 'Asia/Kolkata',
+      year: 'numeric',
+      month: 'numeric', 
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric',
+      hour12: true
+    }).replace(',', '');
     const rows = [];
 
     // Process incoming lines

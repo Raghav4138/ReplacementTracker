@@ -2,6 +2,10 @@ import React, { useState } from "react";
 import axios from "axios";
 
 function App() {
+
+  const modelOptions = ['HF32C', 'CH2025', 'CH12032', 'CH22032', 'CH2038', 'AL2025', 'A1028', 'A1032', 'EF35A', 'DA100', 'HF32A', 'HF35A'];
+  const batchOptions = ['2024', '2025', '2026'];
+
   // Client info
   const [clientName, setClientName] = useState("");
   const [date, setDate] = useState(() => {
@@ -133,20 +137,26 @@ function App() {
           )}
           {incoming.map((row, index) => (
             <div key={index} className="grid grid-cols-4 gap-4 mb-2 items-center">
-              <input
-                type="text"
-                placeholder="Model No"
+              <select
                 value={row.modelNo}
                 onChange={(e) => handleChange("in", index, "modelNo", e.target.value)}
                 className="border rounded-lg p-2"
-              />
-              <input
-                type="text"
-                placeholder="Batch No"
+              >
+                <option value="">Select Model</option>
+                {modelOptions.map(model => (
+                  <option key={model} value={model}>{model}</option>
+                ))}
+              </select>
+              <select
                 value={row.batchNo}
                 onChange={(e) => handleChange("in", index, "batchNo", e.target.value)}
                 className="border rounded-lg p-2"
-              />
+              >
+                <option value="">Select Batch</option>
+                {batchOptions.map(batch => (
+                  <option key={batch} value={batch}>{batch}</option>
+                ))}
+              </select>
               <input
                 type="number"
                 placeholder="Qty"
@@ -177,20 +187,26 @@ function App() {
           )}
           {outgoing.map((row, index) => (
             <div key={index} className="grid grid-cols-4 gap-4 mb-2 items-center">
-              <input
-                type="text"
-                placeholder="Model No"
+              <select
                 value={row.modelNo}
-                onChange={(e) => handleChange("out", index, "modelNo", e.target.value)}
+                onChange={(e) => handleChange("in", index, "modelNo", e.target.value)}
                 className="border rounded-lg p-2"
-              />
-              <input
-                type="text"
-                placeholder="Batch No"
+              >
+                <option value="">Select Model</option>
+                {modelOptions.map(model => (
+                  <option key={model} value={model}>{model}</option>
+                ))}
+              </select>
+              <select
                 value={row.batchNo}
-                onChange={(e) => handleChange("out", index, "batchNo", e.target.value)}
+                onChange={(e) => handleChange("in", index, "batchNo", e.target.value)}
                 className="border rounded-lg p-2"
-              />
+              >
+                <option value="">Select Batch</option>
+                {batchOptions.map(batch => (
+                  <option key={batch} value={batch}>{batch}</option>
+                ))}
+              </select>
               <input
                 type="number"
                 placeholder="Qty"
