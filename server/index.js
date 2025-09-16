@@ -47,7 +47,7 @@ app.get('/clients', async (req, res) => {
 });
 
 // GET /summary?client=NAME -> returns { headers: [...], rows: [...] }
-app.get('/summary', async (req, res) => {
+app.get('/client-summary', async (req, res) => {
   const client = req.query.client;
   if (!client) return res.status(400).json({ error: 'client query param required' });
 
@@ -78,6 +78,77 @@ app.get('/summary', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+// GET /client-details?client=NAME -> returns detailed rows for that client
+app.get('/client-details', async (req, res) => {
+  const client = req.query.client;
+  if (!client) return res.status(400).json({ error: 'client query param required' });
+
+  try {
+    // fetch full range including timestamp
+    const resp = await sheets.spreadsheets.values.get({
+      spreadsheetId: SHEET_ID,
+      range: 'Sheet1!A2:G', // Timestamp | Client Name | Date | Status | Model No | Batch No | Qty
+    });
+
+    const rows = resp.data.values || [];
+
+    // filter only this client's rows
+    const filtered = rows.filter(r => r[1] === client);
+
+    // map into structured format
+    const resultRows = filtered.map(r => {
+      const [timestamp, , date, status, model, batch, qty] = r;
+      return [timestamp, date, model, batch, qty, status];
+    });
+
+    const headers = ['TimeStamp', 'Date', 'Model', 'Batch', 'Qty', 'Status'];
+    res.json({ headers, rows: resultRows });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// fetches OverallSummary from the google sheets 
+app.get("/overall-summary", async (req, res) => {
+  try {
+    const sheets = google.sheets({ version: "v4", auth });
+    const modelRange = "Summary Dashboard!A2:D13";
+    const batchRange = "Summary Dashboard!A16:D18";
+
+    const [modelRes, batchRes] = await Promise.all([
+      sheets.spreadsheets.values.get({
+        spreadsheetId: SHEET_ID,
+        range: modelRange,
+      }),
+      sheets.spreadsheets.values.get({
+        spreadsheetId: SHEET_ID,
+        range: batchRange,
+      }),
+    ]);
+
+    const modelData = modelRes.data.values.map((row) => ({
+      modelNo: row[0],
+      in: Number(row[1] || 0),
+      out: Number(row[2] || 0),
+      pending: Number(row[3] || 0),
+    }));
+
+    const batchData = batchRes.data.values.map((row) => ({
+      batchNo: row[0],
+      in: Number(row[1] || 0),
+      out: Number(row[2] || 0),
+      pending: Number(row[3] || 0),
+    }));
+
+    res.json({ modelSummary: modelData, batchSummary: batchData });
+  } catch (err) {
+    console.error("Error fetching summary:", err);
+    res.status(500).json({ error: "Failed to fetch summary" });
+  }
+});
+
 
 // Route: Append rows
 app.post('/submit', async (req, res) => {
